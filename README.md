@@ -8,5 +8,7 @@ This shall be a simple peer-to-peer application that will consist of a server th
 [] Create datastructures for tic-tac-toe 
 [] Make moves visible in real time 
 [] Polish
-# ServCliTicTacToe
-# ServCliTicTacToe
+
+# Directories 
+simple_example -> example server for sending a "hello world" message to the browser
+OpenSSL_examples -> Working with OpenSSL for security certificates-- more to come later
