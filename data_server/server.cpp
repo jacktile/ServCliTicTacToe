@@ -17,8 +17,53 @@
  * 	- Check if there are 3 horizontally adjacent selections for each player
  * 	- Check diagonal selections for each player, for 3 selections 
  * 	- IF someone wins, depict their player number on the screen and end the process.
- */
+ *
+ * Additional sources:
+ * 	- For creating the server: https://aticleworld.com/socket-programming-in-c-using-tcpip/
+ * OTHER NOTES
+ *	- OOP adjusted implementation will be used later-- effectively using C with c++ compiler and stl
+*/
 #include <iostream>
+#include <stdio.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+
+#define PORTNUM 5001
+
+short SocketCreate(void)
+{
+	/**
+	 * Returns descriptor for a socket on port 
+	 * specified by PORTNUM
+	 */
+	short hSocket;
+	std::cout << "Create the socket\n";
+
+	hSocket = socket(AF_INET, SOCK_STREAM, 0);
+	return hSocket;
+}
+
+int BindCreatedSocket(int hSocket)
+{
+	/**
+	 * Binds socket from the given descriptor 
+	 */
+	std::cout << "Bind the created socket\n";
+	int iRetval=-1;
+	int ClientPort = PORTNUM;
+	struct sockaddr_in remote = {0};	// is this an alternative to memset?
+
+	// internet address family structure
+	remote.sin_family = AF_INET;
+
+	// incoming interfaces
+	remote.sin_addr.s_addr = htonl(INADDR_ANY);
+	remote.sin_port = htons(ClientPort);
+	iRetval = bind(hSocket, (struct sockaddr *) &remote, sizeof(remote));
+
+	return iRetval;
+}
 
 typedef struct Player
 {
@@ -70,8 +115,64 @@ int def_tic_tac_toe(int *tic_arr)
 
 int main()
 {
-	// temporary test array
-	int test_arr[] = {0, 0, 1, 0, 0, 1, 0, 2, 1};
-	std::cout << def_tic_tac_toe(test_arr) << "\n";
+	// variable dec
+	int socket_desc, sock, clientLen, read_size;
+	struct sockaddr_in server, client;
+	char client_message[200] = {0};
+	char message[100] = {0};
+	const char *pMessage = "Wassap";
+
+	// create socket 
+	socket_desc = SocketCreate();
+	if (socket_desc == -1)
+	{
+		printf("Could not create socket");
+		return 1;
+	}
+
+	std::cout << "socket created\n";
+
+	// binding and checking 
+	if (BindCreatedSocket(socket_desc) < 0)
+	{
+		perror("bind failed");
+		return 1;
+	}
+
+	std::cout << "Bind complete\n";
+
+	listen(socket_desc, 3);
+
+	// accepting incoming connections 
+
+	while(1)
+	{
+		clientLen = sizeof(struct sockaddr_in);
+		sock = accept(socket_desc, (struct sockaddr *)&client, (socklen_t*)&clientLen);
+
+		if (sock < 0)
+		{
+			perror("accept failed");
+			return 1;
+		}
+
+		inet_ntop(client.sin_family,
+				(&client.sin_addr),
+			client_message, sizeof(client_message));
+
+		printf("server: got connection from %s\n", client_message);
+
+		if (!fork())
+		{
+			close(socket_desc);
+			if (send(sock, "wassup man", 13, 0) == -1)	// might have an issue with this [13 and 0]
+				perror("send");
+			close(sock);
+			exit(0);
+		}
+
+		close(sock);
+
+	}
 	return 0;
 }
