@@ -28,6 +28,10 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <cstring>
+
+// my function for measuring length of char* w/ null terminated char
+#include "char_p_length_func.cpp"
 
 #define PORTNUM 5001
 
@@ -64,17 +68,6 @@ int BindCreatedSocket(int hSocket)
 
 	return iRetval;
 }
-
-typedef struct Player
-{
-	/**
-	 * Stores information related to each individual player
-	 */
-	int player_num;
-	int score;
-	// need some way to reasonably store ip address
-
-} Player;
 
 int def_tic_tac_toe(int *tic_arr)
 {
@@ -164,8 +157,9 @@ int main()
 
 		if (!fork())
 		{
+			char *msg = "Content-type:text/html\r\n\r\n<html> <h1> Here is a message </h1> </html>";
 			close(socket_desc);
-			if (send(sock, "wassup man", 13, 0) == -1)	// might have an issue with this [13 and 0]
+			if (send(sock, msg, char_p_len(msg) , 0) == -1)	// might have an issue with this [13 and 0]
 				perror("send");
 			close(sock);
 			exit(0);
