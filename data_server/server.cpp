@@ -157,7 +157,7 @@ int main()
 
 		if (!fork())
 		{
-			char *msg = "Content-type:text/html\r\n\r\n<html> <h1> Here is a message </h1> </html>";
+			char *msg = "<!DOCTYPE html><html> <h1> Here is a message </h1> </html>";
 			close(socket_desc);
 			if (send(sock, msg, char_p_len(msg) , 0) == -1)	// might have an issue with this [13 and 0]
 				perror("send");
