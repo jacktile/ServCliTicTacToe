@@ -12,3 +12,7 @@ What if more than one player tries to enter the server at once?
 	Fork a new process
 What if a player stops playing? 
 	Timeout or have a "QUIT" button 
+
+# Timeline 
+[] Implement HTTP headers so that the HTML is properly formatted 
+[] Organize CPP files for Tic-Tac-Toe game 

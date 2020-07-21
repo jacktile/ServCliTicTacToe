@@ -1,3 +1,0 @@
-/**
- * player_page.cpp
- */ 
