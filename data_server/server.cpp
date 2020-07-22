@@ -159,6 +159,7 @@ int main()
 
 		if (!fork())
 		{
+			std::cout << "Forking the connection~\n\n";
 			char *html = "<html> <h1> Here is my header </h1> </html>";
 			char *msg =
 			        "HTTP/1.1 200 OK\n"
@@ -168,21 +169,22 @@ int main()
 				"ETag: \"56d-9989200-1132c580\"\n"	
 				"Content-type: text/html\n"
 				"Content-Length: ";
-		       // converting msg from int to ascii
-		       int html_len = char_p_len(html);
-		       char buffer[html_len];
-		       snprintf(buffer, sizeof(buffer), "%d", html_len);
+		        // converting msg from int to ascii
+		        int html_len = char_p_len(html);
+		        char buffer[html_len];
+		        snprintf(buffer, sizeof(buffer), "%d", html_len);
 
-		       strcat(msg, buffer);
-		       strcat(msg,  "\n"
+		        strcat(msg, buffer);
+		        strcat(msg,  "\n"
 				"Accept-Ranges: bytes\n"
 				"Connection: close\n"
 				"\n");
-		       strcat(msg, html);
+		        strcat(msg, html);
 
 			close(socket_desc);
-			if (send(sock, msg, char_p_len(msg) , 0) == -1)	// might have an issue with this [13 and 0]
+			if (send(sock, msg, char_p_len(msg) , 0) == -1)	
 				perror("send");
+			
 			close(sock);
 			exit(0);
 		}
