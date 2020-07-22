@@ -25,6 +25,8 @@
 */
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <unistd.h>
@@ -157,7 +159,27 @@ int main()
 
 		if (!fork())
 		{
-			char *msg = "Content-type: text/html\r\n\r\n<!DOCTYPE html><html> <h1> Here is a message </h1> </html>";
+			char *html = "<html> <h1> Here is my header </h1> </html>";
+			char *msg =
+			        "HTTP/1.1 200 OK\n"
+				"Date: Thu, 19 Feb 2009 12:27:04 GMT\n"	// fill this in!
+				"Server: Ubuntu\n"
+				"Last-Modified: Wed, 22 Jul 2020 16:05:58 GMT\n"
+				"ETag: \"56d-9989200-1132c580\"\n"	
+				"Content-type: text/html\n"
+				"Content-Length: ";
+		       // converting msg from int to ascii
+		       int html_len = char_p_len(html);
+		       char buffer[html_len];
+		       snprintf(buffer, sizeof(buffer), "%d", html_len);
+
+		       strcat(msg, buffer);
+		       strcat(msg,  "\n"
+				"Accept-Ranges: bytes\n"
+				"Connection: close\n"
+				"\n");
+		       strcat(msg, html);
+
 			close(socket_desc);
 			if (send(sock, msg, char_p_len(msg) , 0) == -1)	// might have an issue with this [13 and 0]
 				perror("send");
